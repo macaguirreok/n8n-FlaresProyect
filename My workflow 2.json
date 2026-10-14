@@ -1,0 +1,160 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b1e42650-7143-41c0-b280-d579b2cfe20e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://ccmc.gsfc.nasa.gov/DONKI-API/get/FLR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "79c7280a-be25-43c3-91d8-c258460524ca",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d8c2a9ac-674b-4de3-b45f-aad6fd2e3fb6",
+              "leftValue": "={{ $json.classType.charAt(0) }}",
+              "rightValue": "M",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "9ed0aaba-72a4-4393-b6ad-e6498e536bdf",
+              "leftValue": "={{ $json.classType.charAt(0) }}",
+              "rightValue": "X",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4499a816-be18-4035-ae3b-7f993a1588fd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fromEmail": "maquienyt@gmail.com",
+        "toEmail": "maquienyt@gmail.com",
+        "subject": "=☀️ Alerta solar: llamarada",
+        "emailFormat": "text",
+        "text": "=Este será el contenido del correo. Activá Expression si querés insertar datos dinámicos.\nSe detectó una llamarada solar de clase: {{ $json.classType }}\n\nInicio: {{ $json.beginTime }}\nPico: {{ $json.peakTime }}\nFin: {{ $json.endTime }}\nID: {{ $json.flrID }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        -16
+      ],
+      "id": "e8016df0-52fc-49e9-9216-2220c2612184",
+      "name": "Send an Email",
+      "webhookId": "37d9761f-06c1-47d2-906f-b8fb942e3c25",
+      "credentials": {
+        "smtp": {
+          "id": "BKZ69HACOnhWT6LR",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6ec10227-8f50-4c9d-a1a5-2651ab10d078",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cd037db4aefffcb8059d878f9c1eb2043aee9b95fec9280687b5eace3139688b"
+  },
+  "nodeGroups": [],
+  "id": "hyd3NsMmY61bMyxA",
+  "tags": []
+}
